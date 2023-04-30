@@ -17,5 +17,5 @@ class BitcoinExchange
 
 
     private:
-        std::map<std::string, double> base;
+        std::map<std::string, double> _base;
 };

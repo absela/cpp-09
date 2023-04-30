@@ -2,10 +2,10 @@
 
 BitcoinExchange::BitcoinExchange(){};
 BitcoinExchange::BitcoinExchange(const BitcoinExchange &s){
-    this->base = s.base;
+    this->_base = s._base;
 };
 BitcoinExchange &BitcoinExchange::operator=(const BitcoinExchange &s){
-    this->base = s.base;
+    this->_base = s._base;
     return *this;
 };
 BitcoinExchange::~BitcoinExchange(){};
@@ -104,29 +104,27 @@ std::string valide_value(std::string str)
             std::cout << "double . " << std::endl;
             return "";
         }
+    }
     float n;
     try
     {
-        n = std::stof(value);
-        // std::cout << n << std::endl;
+        n = std::stof(value.c_str());
     }
     catch(const std::exception& e)
     {
-        std::cerr << "value is not a valide float number." << '\n';
+        std::cerr << "Error : Value" << '\n';
     }
     
-    // if (n > 1000.0)
-    // {
-    //     std::cout << "Error: too large a number." << std::endl;
-    //     return "";
-    // }
-    if (n < 0.0)
+    if (n > 1000)
+    {
+        std::cout << "Error: too large a number." << std::endl;
+        return "";
+    }
+    if (n < 0)
     {
         std::cout << "Error: not a positive number." << std::endl;
         return "";
     }
-    }
-    // std::cout << value << std::endl;
     return value;
 }
 
@@ -164,8 +162,8 @@ void BitcoinExchange::Btc(int ac, char **av)
         while (std::getline(base, line))
         {
             std::string key = line.substr(0, line.find(','));
-            std::string value = line.substr(line.find(',') + 1);
-            this->base.insert(std::make_pair(key,std::atof(value.c_str())));
+            std::string value_b = line.substr(line.find(',') + 1);
+            this->_base.insert(std::make_pair(key,std::atof(value_b.c_str())));
         }
     }
     else
@@ -195,8 +193,26 @@ void BitcoinExchange::Btc(int ac, char **av)
             std::string date = valide_format(str);
             std::string value = valide_value(str);
             std::string date_v = date.substr(0, 10);
-            // std::cout << date_v << std::endl;
-            // std::cout << value << std::endl;
+            if (date.empty() || value.empty())
+                continue;
+            std::map<std::string, double>::iterator it = this->_base.find(date_v);
+            if (it == this->_base.end())
+            {
+                it = this->_base.lower_bound(date_v);
+                if (it == this->_base.begin())
+                {
+                    std::cout << "Error: No data" << std::endl;
+                    return;
+                }
+                double low_b = (--it)->second;
+                double input = atof(value.c_str());
+                std::cout << date + " => " << input << " = " << input * low_b << std::endl;
+            }
+            else
+            {
+                double input = atof(value.c_str());
+                std::cout << date + " => " << input << " = " << input * it->second << std::endl;
+            }
         }
     }
     else
@@ -204,7 +220,5 @@ void BitcoinExchange::Btc(int ac, char **av)
         std::cout << "Error: File not found" << std::endl;
         return;
     }
-    // std::cout << currency << std::endl;
     file.close();
-
 }
