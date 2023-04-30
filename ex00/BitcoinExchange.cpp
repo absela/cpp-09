@@ -13,16 +13,27 @@ BitcoinExchange::~BitcoinExchange(){};
 int check_date(std::string str)
 {
     int dash = 0;
-    int pipe = 0;
 
     for (int i = 0; i < (int)str.size(); i++)
     {
         if (str[i] == '-')
             dash++;
+    }
+    if (dash != 2)
+        return 0;
+    return 1;
+}
+
+int check_pipe(std::string str)
+{
+    int pipe = 0;
+
+    for (int i = 0; i < (int)str.size(); i++)
+    {
         if (str[i] == '|')
             pipe++;
     }
-    if (dash != 2 || pipe != 1)
+    if (pipe != 1)
         return 0;
     return 1;
 }
@@ -39,8 +50,18 @@ int format(std::string str)
     int y = atoi(year.c_str());
     int m = atoi(month.c_str());
     int d = atoi(day.c_str());
-    if (y < 2009 || y > 2022)
+    if (y < 2009 || y >= 2023)
+    {
+        if (y == 2023)
+        {
+            if (m > 5)
+                return 0;
+            if (m == 5 && d > 30) // need to modifeid the days in month 5 
+                return 0;
+        }
+        else
         return 0;
+    }
     if (m < 1 || m > 12)
         return 0;
     if (d < 1 || d > 31)
@@ -57,34 +78,81 @@ int format(std::string str)
     return 1;
 }
 
+std::string valide_value(std::string str)
+{
+    std::string value = str.substr(str.find('|') + 2);
+    if (value.size() < 1)
+    {
+        std::cout << "Error: bad input" + str.substr(0,10) << std::endl;
+        return "";
+    }
+    int pp;
+
+    pp = 0;
+    for (int i = 0; i < (int)value.size(); i++)
+    {
+        if (value[i] >= '0' && value[i] <= '9')
+        {
+            continue;
+        }
+        else if (value[i] == '.' && pp == 0)
+        {
+            pp = 1;
+        }
+        else if (value[i] == '.' && pp == 1)
+        {
+            std::cout << "Aji txouf zbi ki kbr 1 " << std::endl;
+            return "";
+        }
+    float n;
+    try
+    {
+        n = std::stof(value);
+        // std::cout << n << std::endl;
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "value is not a valide float number." << '\n';
+    }
+    
+    // if (n > 1000.0)
+    // {
+    //     std::cout << "Error: too large a number." << std::endl;
+    //     return "";
+    // }
+    if (n < 0.0)
+    {
+        std::cout << "Error: not a positive number." << std::endl;
+        return "";
+    }
+    }
+    // std::cout << value << std::endl;
+    return value;
+}
+
 std::string valide_format(std::string str)
 {
-    if (str.size() < 14)
+    if (str.size() < 14 || !check_pipe(str))
     {
-        std::cout << "Error: Invalid file format-" << std::endl;
+        std::cout << "Error: bad inputs =>" + str.substr(0,10) << std::endl;
         return "";
     }
     std::string date = str.substr(0,str.find('|') + 1);
-    std::string currency = str.substr(str.find('|') + 1);
     if (date.size() != 12 || !format(date))
     {
-        std::cout << "Error: Invalid file format" << std::endl;
+        std::cout << "Error: bad input =>" + str.substr(0,10) << std::endl;
         return "";
     }
-    std::cout << currency << std::endl;
     return date;
 }
 
 void BitcoinExchange::Btc(int ac, char **av)
 {
     (void)ac;
-    // (void)av;
     std::ifstream base;
     std::ifstream file;
     std::string line;
     std::string str;
-    // int i = 0;
-    // float value;
     base.open("data.csv");
     if (base.is_open())
     {
@@ -125,6 +193,10 @@ void BitcoinExchange::Btc(int ac, char **av)
             if (str.empty())
                 continue;
             std::string date = valide_format(str);
+            std::string value = valide_value(str);
+            std::string date_v = date.substr(0, 10);
+            // std::cout << date_v << std::endl;
+            // std::cout << value << std::endl;
         }
     }
     else
