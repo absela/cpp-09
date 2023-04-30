@@ -101,7 +101,7 @@ std::string valide_value(std::string str)
         }
         else if (value[i] == '.' && pp == 1)
         {
-            std::cout << "Aji txouf zbi ki kbr 1 " << std::endl;
+            std::cout << "double . " << std::endl;
             return "";
         }
     float n;
