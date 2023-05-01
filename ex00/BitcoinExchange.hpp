@@ -12,7 +12,9 @@ class BitcoinExchange
         BitcoinExchange(const BitcoinExchange &s);
         BitcoinExchange &operator=(const BitcoinExchange &s);
         ~BitcoinExchange();
-        void parsing_date(int dd, int mm, int yy);
+
+
+        
         void Btc(int ac, char **av);
 
 

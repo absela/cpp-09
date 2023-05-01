@@ -45,23 +45,11 @@ int format(std::string str)
     std::string day = str.substr(8,2);
     if (year.size() != 4 || month.size() != 2 || day.size() != 2)
         return 0;
-    if (year[0] != '2' || year[1] != '0')
-        return 0;
     int y = atoi(year.c_str());
     int m = atoi(month.c_str());
     int d = atoi(day.c_str());
-    if (y < 2009 || y >= 2023)
-    {
-        if (y == 2023)
-        {
-            if (m > 5)
-                return 0;
-            if (m == 5 && d > 30) // need to modifeid the days in month 5 
-                return 0;
-        }
-        else
+    if (y < 2009)
         return 0;
-    }
     if (m < 1 || m > 12)
         return 0;
     if (d < 1 || d > 31)
@@ -91,7 +79,12 @@ std::string valide_value(std::string str)
     pp = 0;
     for (int i = 0; i < (int)value.size(); i++)
     {
-        if (value[i] >= '0' && value[i] <= '9')
+        if (!isdigit(value[i]) && value[i] != '.' && value[i] != '-')
+        {
+            std::cout << "Error: bad input =>" + str.substr(0,10) << std::endl;
+            return "";
+        }
+        if (isdigit(value[i]))
         {
             continue;
         }
@@ -108,7 +101,7 @@ std::string valide_value(std::string str)
     float n;
     try
     {
-        n = std::stof(value.c_str());
+        n = std::atof(value.c_str());
     }
     catch(const std::exception& e)
     {
@@ -120,7 +113,7 @@ std::string valide_value(std::string str)
         std::cout << "Error: too large a number." << std::endl;
         return "";
     }
-    if (n < 0)
+    if (n <= 0)
     {
         std::cout << "Error: not a positive number." << std::endl;
         return "";
@@ -130,7 +123,7 @@ std::string valide_value(std::string str)
 
 std::string valide_format(std::string str)
 {
-    if (str.size() < 14 || !check_pipe(str))
+    if (str.size() < 14 || !check_pipe(str) || (str.substr(13,1) == "-" && str.substr(14, -1) == "0"))
     {
         std::cout << "Error: bad inputs =>" + str.substr(0,10) << std::endl;
         return "";

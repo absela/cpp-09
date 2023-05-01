@@ -12,17 +12,17 @@ HDR = BitcoinExchange.hpp
 
 CXX = c++
 
-FLAGS = -Wall -Werror -Wextra -std=c++98
+CFLAGS = -Wall -Werror -Wextra -std=c++98
 
 obj = $(src:.cpp=.o)
 
 %.o : %.cpp ${HDR}
-	@${CXX} ${FLAGS} -c $< -o $@
+	@${CXX} ${CFLAGS} -c $< -o $@
 
 all : $(NAME)
 
 $(NAME) : $(obj)
-	@${CXX} ${FLAGS} $(obj) -o $(NAME)
+	@${CXX} ${CFLAGS} $(obj) -o $(NAME)
 	@printf "$(_SUCCESS) $(NAME) is ready!.\n"
 
 clean :
