@@ -98,16 +98,7 @@ std::string valide_value(std::string str)
             return "";
         }
     }
-    float n;
-    try
-    {
-        n = std::atof(value.c_str());
-    }
-    catch(const std::exception& e)
-    {
-        std::cerr << "Error : Value" << '\n';
-    }
-    
+    double n = std::atof(value.c_str());
     if (n > 1000)
     {
         std::cout << "Error: too large a number." << std::endl;
@@ -157,6 +148,7 @@ void BitcoinExchange::Btc(int ac, char **av)
             std::string key = line.substr(0, line.find(','));
             std::string value_b = line.substr(line.find(',') + 1);
             this->_base.insert(std::make_pair(key,std::atof(value_b.c_str())));
+            // this->_base.insert(std::pair<std::string ,double>(key,std::atof(value_b.c_str())));
         }
     }
     else
@@ -195,7 +187,7 @@ void BitcoinExchange::Btc(int ac, char **av)
                 if (it == this->_base.begin())
                 {
                     std::cout << "Error: No data" << std::endl;
-                    return;
+                    continue;
                 }
                 double low_b = (--it)->second;
                 double input = atof(value.c_str());
