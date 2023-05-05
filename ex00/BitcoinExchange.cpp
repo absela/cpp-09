@@ -66,23 +66,15 @@ int format(std::string str)
     return 1;
 }
 
-std::string valide_value(std::string str)
+int extra_check(std::string str)
 {
-    std::string value = str.substr(str.find('|') + 2);
-    if (value.size() < 1)
-    {
-        std::cout << "Error: bad input" + str.substr(0,10) << std::endl;
-        return "";
-    }
-    int pp;
-
-    pp = 0;
+    std::string value = str.substr(str.find('|') + 1);
+    int pp = 0;
     for (int i = 0; i < (int)value.size(); i++)
     {
-        if (!isdigit(value[i]) && value[i] != '.' && value[i] != '-')
+        if (!isdigit(value[i]) && value[i] != '.' && value[i] != '-' && value[i] != ' ')
         {
-            std::cout << "Error: bad input =>" + str.substr(0,10) << std::endl;
-            return "";
+            return 0;
         }
         if (isdigit(value[i]))
         {
@@ -91,41 +83,55 @@ std::string valide_value(std::string str)
         else if (value[i] == '.' && pp == 0)
         {
             pp = 1;
+            continue;
         }
         else if (value[i] == '.' && pp == 1)
         {
-            std::cout << "double . " << std::endl;
-            return "";
+            return 0;
         }
     }
-    double n = std::atof(value.c_str());
-    if (n > 1000)
+    return 1;
+}
+
+int check_dash(std::string str)
+{
+    int dash = 0;
+
+    for (int i = 0; i < (int)str.size(); i++)
     {
-        std::cout << "Error: too large a number." << std::endl;
-        return "";
+        if (str[i] == '-')
+            dash++;
     }
-    if (n <= 0)
-    {
-        std::cout << "Error: not a positive number." << std::endl;
-        return "";
-    }
-    return value;
+    if (dash != 2)
+        return 0;
+    return 1;
 }
 
 std::string valide_format(std::string str)
 {
-    if (str.size() < 14 || !check_pipe(str) || (str.substr(13,1) == "-" && str.substr(14, -1) == "0"))
+    double n = std::atof(str.substr(str.find('|') + 1).c_str());
+    if (str.size() < 14 || !check_pipe(str)|| str.substr(0,str.find('|') + 1).size() != 12
+        || !format(str.substr(0,10)) || !check_dash(str.substr(0,10)))
     {
         std::cout << "Error: bad inputs =>" + str.substr(0,10) << std::endl;
         return "";
     }
-    std::string date = str.substr(0,str.find('|') + 1);
-    if (date.size() != 12 || !format(date))
+    else if(!extra_check(str))
     {
-        std::cout << "Error: bad input =>" + str.substr(0,10) << std::endl;
+        std::cout << "Error: bad inputs =>" + str.substr(str.find('|') + 1) << std::endl;
         return "";
     }
-    return date;
+    else if (n >= 1000)
+    {
+        std::cout << "Error: too large a number." << std::endl;
+        return "";
+    }
+    else if (n <= 0)
+    {
+        std::cout << "Error: not a positive number." << std::endl;
+        return "";
+    }
+    return str;
 }
 
 void BitcoinExchange::Btc(int ac, char **av)
@@ -175,15 +181,15 @@ void BitcoinExchange::Btc(int ac, char **av)
         {
             if (str.empty())
                 continue;
-            std::string date = valide_format(str);
-            std::string value = valide_value(str);
-            std::string date_v = date.substr(0, 10);
+            std::string valide = valide_format(str);
+            std::string date(valide.substr(0,10));
+            std::string value(valide.substr(valide.find('|') + 1));
             if (date.empty() || value.empty())
                 continue;
-            std::map<std::string, double>::iterator it = this->_base.find(date_v);
+            std::map<std::string, double>::iterator it = this->_base.find(date);
             if (it == this->_base.end())
             {
-                it = this->_base.lower_bound(date_v);
+                it = this->_base.lower_bound(date);
                 if (it == this->_base.begin())
                 {
                     std::cout << "Error: No data" << std::endl;
