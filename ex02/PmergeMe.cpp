@@ -20,7 +20,6 @@ void insertSort(std::vector<int> &vec)
     int i;
     int j;
     int tmp;
-
     for (i = 1; i < (int)vec.size(); i++)
     {
         tmp = vec[i];

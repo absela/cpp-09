@@ -80,12 +80,12 @@ int extra_check(std::string str)
         {
             continue;
         }
-        else if (value[i] == '.' && pp == 0)
+        if (value[i] == '.' && pp == 0)
         {
             pp = 1;
             continue;
         }
-        else if (value[i] == '.' && pp == 1)
+        if (value[i] == '.' && pp == 1)
         {
             return 0;
         }
@@ -154,7 +154,6 @@ void BitcoinExchange::Btc(int ac, char **av)
             std::string key = line.substr(0, line.find(','));
             std::string value_b = line.substr(line.find(',') + 1);
             this->_base.insert(std::make_pair(key,std::atof(value_b.c_str())));
-            // this->_base.insert(std::pair<std::string ,double>(key,std::atof(value_b.c_str())));
         }
     }
     else

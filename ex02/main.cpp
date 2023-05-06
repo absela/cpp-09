@@ -35,7 +35,6 @@ int main(int ac, char **av)
         dq.push_back(num);
     }
     clock_t T;
-    T = clock();
     std::cout << "befor :vector: ";
     for (int i = 0; i < (int)vec.size(); i++)
         std::cout << vec[i] << " ";
@@ -45,13 +44,15 @@ int main(int ac, char **av)
         std::cout << dq[i] << " ";
     std::cout << std::endl;
     std::cout << std::endl;
+    T = clock();
     Pem.mergeSort(vec);
     T = clock() - T;
-    double time = ((double)T) / CLOCKS_PER_SEC;
+    double time = ((double)T) / (CLOCKS_PER_SEC / 1000);
     std::cout << "time for vector: " << time << std::endl;
+    T = clock();
     Pem.mergeSort(dq);
     T = clock() - T;
-    double timee = ((double)T) / CLOCKS_PER_SEC;
+    double timee = ((double)T)/ (CLOCKS_PER_SEC / 1000);
     std::cout << "time for deque: " << timee << std::endl;
     std::cout << "after vector: ";
     for (int i = 0; i < (int)vec.size(); i++)
